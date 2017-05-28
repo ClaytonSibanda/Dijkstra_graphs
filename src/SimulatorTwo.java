@@ -1,6 +1,7 @@
 
 
-
+import java.util.LinkedList;
+import java.util.List;
 import java.io.FileReader;
 
 import java.util.*;
@@ -121,7 +122,7 @@ public class SimulatorTwo {
              }
 
 
-             System.out.println("victims now");
+             System.out.println("hospitals now");
              for (Hospital item:gr.hos) {
                  System.out.println(item.getNumber_of_beds()+"  "+ item.getName()+"  "+item.getGroupName());
              }*/
@@ -189,19 +190,26 @@ public class SimulatorTwo {
                     // System.out.println(path1+" path2 "+path2);
 
 
-                    //System.out.println(" Cost is "+ (cost1+cost2));
+                   // System.out.println(" Cost is "+ (cost1+cost2));
                     //System.out.println("Path is "+ path1);
                     // if(path1!=" " && path2!=" " && !(cost1>=INFINITY) && !(cost2>=INFINITY)){
                     //calculating the cost
+                    if(costMap.isEmpty() || (cost1+cost2)<=(Collections.min(costMap.values()))  ){
                     costMap.put(h, (cost1 + cost2));
+                   // System.out.println(h +" "+(cost1+cost2));
                     pathMap.put(h, path1.substring(1) + path2.substring(2));
+                    }
                     // }
 
                 }
             }
+
             double minValueInMap = (Collections.min(costMap.values()));
+
             for (Map.Entry<String, Double> entry : costMap.entrySet()) {
                 // Iterate through hashmap
+
+               // System.out.println("In the printing loop now\n"+entry.getKey()+" "+entry.getValue());
                 if (entry.getValue() == minValueInMap && minValueInMap < INFINITY) {
 
                     for (Hospital h : g.hos) {
@@ -212,11 +220,13 @@ public class SimulatorTwo {
 
                         // Print the key with max value
                     }
-                } else {
-                    if (minValueInMap >= INFINITY) {
-                        System.out.println("Not accessible");
-                    }
                 }
+
+
+
+            }
+            if (minValueInMap >= INFINITY) {
+                System.out.println("Not accessible");
             }
 
 
@@ -347,9 +357,143 @@ public class SimulatorTwo {
 }
 
 // Used to signal violations of preconditions for
-// various shortest path algorithms.
 class SimulatorTwoException extends RuntimeException {
     public SimulatorTwoException(String name) {
         super(name);
     }
+}
+
+/**
+ * Created by Clayza on 2017-05-13.
+ */
+// Represents an entry in the priority queue for Dijkstra's algorithm.
+class Path implements Comparable<Path>
+{
+    public Vertex dest; // w
+    public double cost; // d(w)
+
+    public Path( Vertex d, double c )
+    {
+        dest = d;
+        cost = c;
+    }
+    public int compareTo( Path rhs )
+    {
+        double otherCost = rhs.cost;
+
+        return cost < otherCost ? -1 : cost > otherCost ? 1 : 0;
+    }
+}
+
+
+
+/**
+ * Created by Clayza on 2017-05-13.
+ */
+// Represents a vertex in the graph.
+class Vertex
+{
+    public String name; // Vertex name
+    public List<Edge> adj; // Adjacent vertices
+    public double dist; // Cost
+    public Vertex prev; // Previous vertex on shortest path
+    public int scratch;// Extra variable used in algorithm
+
+    public Vertex( String name )
+    { this.name = name;
+        this.adj = new LinkedList<Edge>( );
+
+        reset( ); }
+
+    public Vertex() {
+
+    }
+
+    public void reset( )
+    { dist = SimulatorTwo.INFINITY; prev = null; /*pos = null;*/ scratch = 0; }
+}
+
+/**
+ * Created by Clayza on 2017-05-13.
+ */
+// Represents an edge in the graph.
+class Edge {
+    public Vertex dest; // Second vertex in Edge
+    public double cost; // Edge cost
+
+    public Edge(Vertex d, double c) {
+        dest = d;
+        cost = c;
+    }
+}
+
+
+/**
+ * @author  Clayton Sibanda
+ * @version 1.0
+ * @since   2017-05-21
+ */
+ class Hospital {
+    private int number_of_beds;
+    private  String name;
+
+
+    private String groupName;
+
+    public Hospital(int number_of_beds, String name,String groupName) {
+        this.number_of_beds = number_of_beds;
+        this.name = name;
+        this.groupName =groupName;
+    }
+
+    /**
+     * setter method
+     * @param name, name of the hospital
+     *
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * setter method
+     * @param groupName, name of the group to which the hospital/ambulance belongs to
+     *
+     */
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    /**
+     * getter method
+     * returns the number of beds in the hospital
+     *
+     */
+    public int getNumber_of_beds() {
+        return number_of_beds;
+    }
+
+
+    /**
+     * getter method
+     * returns the name of the hospital
+     *
+     */
+    public String getName() {
+        return name;
+    }
+
+
+
+
+    /**
+     * getter method
+     * returns the group name of the hospital
+     *
+     */
+    public String getGroupName() {
+        return groupName;
+    }
+
+
 }
